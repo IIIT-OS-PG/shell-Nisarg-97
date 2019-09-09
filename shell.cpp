@@ -1,4 +1,5 @@
 
+
 #include "shell.h"
 
 void close_pipes(int (*pipes)[2], int count){
@@ -31,6 +32,7 @@ commands parse_with_pipe(string input){
     command instuct;
     stringstream STR1(input);
     string S1;
+            
     while (getline(STR1, S1, '|'))
     {
         instuct.parameters.clear();
@@ -87,7 +89,7 @@ int exe_single_command(commands commands){
                 return 0;
         }
 
-        //build the args
+        
         char *argument_v[1000];
         int j;
         for (j = 0; j < commands.v_commands[0].parameters.size(); j++)
@@ -97,7 +99,7 @@ int exe_single_command(commands commands){
         }
         argument_v[j] = (char *)NULL;
 
-        //exe_commands it as a child
+        
         pid_t pid = fork();
         if (pid == 0)
         {
@@ -121,11 +123,11 @@ int exe_commands(commands commands)
 {
     
 
-    //if no commands
+    
     if (commands.v_commands.size() == 0)
         return 0;
 
-    //if only one cmd,exe_commands it
+    
     if (commands.v_commands.size() == 1)
     {
         return exe_single_command(commands);
@@ -155,7 +157,7 @@ int exe_commands(commands commands)
         for (int i = 0; i < commands.command_count; i++)
         {
             
-            char *argument_v[1000];
+            char *argument_v[1024];
             int j;
             for (j = 0; j < commands.v_commands[i].parameters.size(); j++)
             {
@@ -208,17 +210,12 @@ int main()
         string input;    
         printf("$ ");
         getline(cin, input);
-        if (input == "exit")
-            break;
-        if (input == "echo $?")
-        {
-            cout << store << endl;
-            continue;
-        }
-
+       
         commands commands = parse_with_pipe(input);
 
         store = exe_commands(commands);
+        if (input == "exit")
+            break;
     }
 
     return 0;
